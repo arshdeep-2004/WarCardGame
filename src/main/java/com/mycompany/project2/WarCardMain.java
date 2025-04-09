@@ -7,22 +7,33 @@ package com.mycompany.project2;
 import java.util.Scanner;
 
 public class WarCardMain {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter name for Player 1: ");
-        String name1 = scanner.nextLine();
+  public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
 
-        System.out.print("Enter name for Player 2: ");
-        String name2 = scanner.nextLine();
+        System.out.print("Enter Player 1 name: ");
+        String name1 = input.nextLine();
+        System.out.print("Enter Player 2 name: ");
+        String name2 = input.nextLine();
 
         Game game = new Game(name1, name2);
-        game.startGame();
+        game.start();
 
-        for (int round = 1; round <= 26; round++) {
-            System.out.println("\nRound " + round + ":");
+        final int MAX_ROUNDS = 10; // 🔁 Limit to 10 turns for testing
+        int roundCounter = 0;
+
+        while (!game.isGameOver() && roundCounter < MAX_ROUNDS) {
+            System.out.println("\n--- Round " + (roundCounter + 1) + " ---");
             game.playRound();
+            roundCounter++;
+
+            // Optional pause: comment out for faster testing
+            System.out.println("Press Enter to continue...");
+            input.nextLine();
         }
 
-        game.displayWinner();
+        System.out.println("\n--- Game Over ---");
+        game.declareWinner();
+        input.close();
     }
 }
+
