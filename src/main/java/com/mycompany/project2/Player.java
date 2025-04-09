@@ -3,13 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.project2;
-
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
 
 public class Player {
     private String name;
-    private LinkedList<Card> hand;
+    private Queue<Card> hand;
 
     public Player(String name) {
         this.name = name;
@@ -20,19 +19,25 @@ public class Player {
         return name;
     }
 
+    public void addCards(Card... cards) {
+        for (Card card : cards) {
+            hand.add(card);
+        }
+    }
+
     public Card drawCard() {
-        return hand.poll(); // removes and returns the top card
+        return hand.poll();
     }
 
-    public void addCards(List<Card> cards) {
-        hand.addAll(cards); // adds won cards to the bottom of the hand
-    }
-
-    public int getHandSize() {
+    public int cardCount() {
         return hand.size();
     }
 
-    public void receiveCard(Card card) {
-        hand.add(card);
+    public boolean hasEnoughCards(int count) {
+        return hand.size() >= count;
+    }
+
+    public Queue<Card> getHand() {
+        return hand;
     }
 }
