@@ -13,10 +13,11 @@ public class GroupOfCards {
 
     public GroupOfCards() {
         cards = new ArrayList<>();
-        String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
+        String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
+
         for (String suit : suits) {
-            for (int i = 2; i <= 14; i++) { // 11=J, 12=Q, 13=K, 14=A
-                cards.add(new Card(suit, i));
+            for (int rank = 2; rank <= 14; rank++) { // 11–14 = J, Q, K, A
+                cards.add(new Card(suit, rank));
             }
         }
     }
@@ -25,16 +26,17 @@ public class GroupOfCards {
         Collections.shuffle(cards);
     }
 
-    public List<List<Card>> dealCards() {
-        List<Card> p1 = new ArrayList<>();
-        List<Card> p2 = new ArrayList<>();
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void deal(Player p1, Player p2) {
         for (int i = 0; i < cards.size(); i++) {
-            if (i % 2 == 0) p1.add(cards.get(i));
-            else p2.add(cards.get(i));
+            if (i % 2 == 0)
+                p1.addCards(cards.get(i));
+            else
+                p2.addCards(cards.get(i));
         }
-        List<List<Card>> dealt = new ArrayList<>();
-        dealt.add(p1);
-        dealt.add(p2);
-        return dealt;
     }
 }
+
