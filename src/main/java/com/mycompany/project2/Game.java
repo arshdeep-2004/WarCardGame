@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.project2;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,87 +17,90 @@ public class Game {
         deck = new GroupOfCards();
     }
 
-    public void startGame() {
+    public void start() {
         deck.shuffle();
-        List<List<Card>> hands = deck.dealCards();
-        for (Card card : hands.get(0)) {
-            player1.receiveCard(card);
-        }
-        for (Card card : hands.get(1)) {
-            player2.receiveCard(card);
-        }
+        deck.deal(player1, player2);
     }
 
     public void playRound() {
-        Card card1 = player1.drawCard();
-        Card card2 = player2.drawCard();
+        if (isGameOver()) return;
 
-        System.out.println(player1.getName() + " plays " + card1);
-        System.out.println(player2.getName() + " plays " + card2);
+        Card p1Card = player1.drawCard();
+        Card p2Card = player2.drawCard();
 
-        int result = compareCards(card1, card2);
-        List<Card> roundCards = new ArrayList<>();
-        roundCards.add(card1);
-        roundCards.add(card2);
+        System.out.println(player1.getName() + " plays: " + p1Card);
+        System.out.println(player2.getName() + " plays: " + p2Card);
 
-        if (result > 0) {
-            System.out.println(player1.getName() + " wins the round.");
-            player1.addCards(roundCards);
-        } else if (result < 0) {
-            System.out.println(player2.getName() + " wins the round.");
-            player2.addCards(roundCards);
+        List<Card> pile = new ArrayList<>();
+        pile.add(p1Card);
+        pile.add(p2Card);
+
+        if (p1Card.getRank() > p2Card.getRank()) {
+            player1.addCards(pile.toArray(new Card[0]));
+            System.out.println(player1.getName() + " wins the round.\n");
+        } else if (p1Card.getRank() < p2Card.getRank()) {
+            player2.addCards(pile.toArray(new Card[0]));
+            System.out.println(player2.getName() + " wins the round.\n");
         } else {
-            System.out.println("War!");
-            handleWar(roundCards);
+            System.out.println("WAR!");
+            handleWar(pile);
         }
     }
 
-    public int compareCards(Card c1, Card c2) {
-        return Integer.compare(c1.getValue(), c2.getValue());
-    }
-
-    public void handleWar(List<Card> warCards) {
-        if (player1.getHandSize() < 4 || player2.getHandSize() < 4) {
-            System.out.println("Not enough cards to continue war.");
+    private void handleWar(List<Card> pile) {
+        if (!player1.hasEnoughCards(4)) {
+            System.out.println(player1.getName() + " cannot continue the war. " + player2.getName() + " wins!");
+            player2.addCards(pile.toArray(new Card[0]));
+            return;
+        }
+        if (!player2.hasEnoughCards(4)) {
+            System.out.println(player2.getName() + " cannot continue the war. " + player1.getName() + " wins!");
+            player1.addCards(pile.toArray(new Card[0]));
             return;
         }
 
+        List<Card> warCards1 = new ArrayList<>();
+        List<Card> warCards2 = new ArrayList<>();
+
         for (int i = 0; i < 3; i++) {
-            warCards.add(player1.drawCard());
-            warCards.add(player2.drawCard());
+            warCards1.add(player1.drawCard());
+            warCards2.add(player2.drawCard());
         }
 
-        Card warCard1 = player1.drawCard();
-        Card warCard2 = player2.drawCard();
+        Card p1FaceUp = player1.drawCard();
+        Card p2FaceUp = player2.drawCard();
 
-        warCards.add(warCard1);
-        warCards.add(warCard2);
+        warCards1.add(p1FaceUp);
+        warCards2.add(p2FaceUp);
 
-        System.out.println(player1.getName() + " plays war card: " + warCard1);
-        System.out.println(player2.getName() + " plays war card: " + warCard2);
+        System.out.println(player1.getName() + " war card: " + p1FaceUp);
+        System.out.println(player2.getName() + " war card: " + p2FaceUp);
 
-        int result = compareCards(warCard1, warCard2);
-        if (result > 0) {
-            player1.addCards(warCards);
-        } else if (result < 0) {
-            player2.addCards(warCards);
+        pile.addAll(warCards1);
+        pile.addAll(warCards2);
+
+        if (p1FaceUp.getRank() > p2FaceUp.getRank()) {
+            player1.addCards(pile.toArray(new Card[0]));
+            System.out.println(player1.getName() + " wins the war.\n");
+        } else if (p1FaceUp.getRank() < p2FaceUp.getRank()) {
+            player2.addCards(pile.toArray(new Card[0]));
+            System.out.println(player2.getName() + " wins the war.\n");
         } else {
-            System.out.println("War again!");
-            handleWar(warCards); // recursive call
+            System.out.println("WAR again!");
+            handleWar(pile);
         }
     }
 
-    public void displayWinner() {
-        System.out.println("Final Result:");
-        System.out.println(player1.getName() + ": " + player1.getHandSize() + " cards");
-        System.out.println(player2.getName() + ": " + player2.getHandSize() + " cards");
+    public boolean isGameOver() {
+        return player1.cardCount() == 0 || player2.cardCount() == 0;
+    }
 
-        if (player1.getHandSize() > player2.getHandSize()) {
+    public void declareWinner() {
+        if (player1.cardCount() > player2.cardCount())
             System.out.println(player1.getName() + " wins the game!");
-        } else if (player2.getHandSize() > player1.getHandSize()) {
+        else if (player2.cardCount() > player1.cardCount())
             System.out.println(player2.getName() + " wins the game!");
-        } else {
-            System.out.println("It's a tie!");
-        }
+        else
+            System.out.println("Game is a draw!");
     }
 }
